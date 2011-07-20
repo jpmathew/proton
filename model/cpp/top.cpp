@@ -8,7 +8,7 @@ int main()
 	cmp1=new comparator(0.01);
 
 	bool output;
-	output=cmp1->compare(.22,.43);
+	output=cmp1->compare(.52,.43);
 
 	cout<<output<<endl;
 
