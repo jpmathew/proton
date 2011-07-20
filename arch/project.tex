@@ -1,0 +1,86 @@
+\documentclass[a4paper,10pt,fleqn,titlepage,twoside]{article}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks,linkcolor=red,urlcolor=red,citecolor=red,plainpages=false,pdfpagelabels,breaklinks]{hyperref}
+\pagestyle{plain}
+
+\title{Architecture for a High Speed SAR ADC}
+\author{
+        Joseph Palackal Mathew \\
+	Department of Electrical Engineering\\
+        University of California,Los Angeles\\ 
+	\href{mailto:jpmathew@ucla.edi}{jpmathew@ucla.edu}
+}
+\date{\today}
+\begin{document}
+\maketitle
+
+\section*{Problem Definition}
+Derive a topology that will minimize power while achiveing 12 bits of resolution and 200MSPS speed . Make topology amenable for future interleaving 
+that can improve speed.
+
+\section*{Problem Analysis}
+
+We are given an input $x\:\epsilon\:[-1,1]$ and converter tries to find K such that $$-1+K\Delta \leq x \leq -1+(K+1)\Delta.$$ If input
+is uniformly distributed then the problem will require a minimum $N=log_2(2/\Delta)$ ``Yes or No'' questions with precise answers. From a circuit
+perspective ``Yes or No' is that of a comparator comparing input with a threshold with infinite precision. If the
+comparison has finite precision i.e it is unreliable for $|inp| < \epsilon $ then at the end of $N$ questions input can be as far as
+$\epsilon$ away from the said range.
+
+A typical SAR ADC conversion proceeds as follows . We compare the input with a threshold $V_{th}(k) = r(k)*(x_{max}(k)+x_{min}(k)) + \epsilon(k) $ where it's
+guranteed by previous knowledge that $x\:\epsilon\:[x_{max}(k),x_{min}(k)]$.At the end of comparison the input is guaranteed to be in
+$[x_{max}(k),V_{th}(k)]$ or $[x_{min}(k),V_{th}(k)]$ so by setting $x_{max}(k+1)$ and $x_{min}(k+1)$ accordingly we can gurantee that range in which 
+input can lie $S(k+1)=x_{max}(k+1)-x_{min}(k+1) < S(k)$ provided that we put the thresholds  $V_{th}(k)\:\epsilon[x_{max}(k),x_{min}(k)]$ . This by iteration 
+can guarantee that we can locate input to a finite precision in required number of steps.
+
+\newpage
+\subsection*{Observations}
+\begin{enumerate}
+\item
+{
+	In a latched comparator $V_{in}*e^{t/\tau}=VDD$ . For a minimum resolution input $V_{\delta}$ it will need a time $T_{\delta}  = \tau*ln(VDD/V_{\delta})
+$.Every other input needs time less than $T_{\delta}$.An asynchronous ADC optimizes by making every comparison time jsut enough to make accurate decision
+and allowing remianing time to be used for some other operation.Here $T_{cmp}=\tau*ln(VDD/V_{in})$ giving a two fold improvement in time required in decision
+.For a latch $\tau = Gm/C = \beta*\sqrt(w)/C_{oxl}*W +C_{load}$ . if offset is non critical (SAR) or calibrated (multibit) no optimization is possible in this
+end. At higher precision ($V_\delta ~= 10mV ~= 8bit$)noise (thermal/capacitive coupling noise) from this may become critical and a switch from a noisy to low noise
+latch may be required.This will increase W and reduce $\tau$.Total worst case comparison time = $N(N-1)/2*ln(2)*\tau$.
+}
+\item
+{
+	Non Binary SAR ADC is based on following observation . In a SAR ADC without any redundancy $k_{th}$ DAC step S(k) needs to settle to $1LSB = VREF/2^{N}$
+to converge correctly . In a constant clock environment this requires a time $T_{dac}=\tau*N*ln(2)$ corresponding to worst case first step and hence a total
+DAC time of $\tau*N^{2}*ln(2)$. If each DAC step gets a settling time just enough to meet the settling requirement then $T_{dac}(k)=\tau*(N-k)*ln(2)$ and total dac
+time will be $\tau*N(N-1)/2*ln(2)$. To make $T_{DAC}$ a constant we need redundancy propotional to current step so that an error $S(k)*e^{-T_{dac}/\tau}$ can be tolerated
+.For this 
+\begin{align*}
+\sum_{(k+1)}^N{S(i)} &= (1+m)*S(k)\\
+\sum_{(k+2)}^N{S(i)} &= (1+m)*S(k+1)\\
+S(k+1) &= (1+m)*(S(k)-S(k+1))\\
+S(k+1) &= (1+m)/(2+m)*S(k)\\
+\end{align*}
+This Points to a non binary radix $r=(1+m)/(2+m)$ . since redundancy greater than a step is not required $m<1$ and $r<2/3$. Total conversion clock = $\tau*ln(1/m)*ln(2)*ln(m+1)/ln(2+m)$.
+Though this points to a near zero conversion time with m=1 its a mathematical anomally because of approximating error as $S(k)*e^{-T_{dac}/\tau}$ . More correct Derivation
+is as follows (assumes non binary sar)
+\begin{align*}
+settling error &= \sum_1^k{S(i)*e^{(-(k-i)*T_{clk}+T_{dac})/\tau}}\\
+S(k)&=1/2*r^{(k-1)}\\
+settling error &= 1/2*r^{(k-1)}*e^{-T_{dac})/\tau}*\sum_0^{k-1}{r^-i*e^{-iT_{clk}/\tau}}\\
+settling error &= 1/2*r^{(k-1)}*e^{-T_{dac})/\tau}*(1-r^-k*e^{-k*T_{clk}/\tau})/(1-r^{-1}*e^{-T_{clk}/\tau})\\
+e^{-T_{clk}/\tau} &< r\\
+settling error &~= 1/2*r(k-1)*e^{(-T_{clk}/\tau)}/(1-r^{-1}**e^{-T_{clk}/\tau}) = m*1/2*r^{(k-1)}\\
+e^{-T_{dac}/\tau} = m/(1+rm) < r\\
+r&~=1/2\\
+T_{dac} &~= 2*ln(2)*\tau;
+\end{align*}
+}
+\item
+{
+	In a constant clock binary asynchronous ADC 's advantageous to constraint $$T_{cmp}(k)+T_{dacNamp}(k+1) = T_{Clk}$$ 
+This is because if ${(k+1)}^{th}$ decision is critical $k^{th}$ decision is non critical and should take less time which can be used to make ${(k+1)}^{th}$
+decision more precise.Also ${(k+1)}^{th}$ decision will take more time but since ${(k+2)}^{th}$ deciison is noncritical its dac settling error doesnt matter.
+}
+\item
+{
+
+\end{enumerate}
+\end{document}
