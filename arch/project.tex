@@ -64,11 +64,13 @@ is as follows (assumes non binary sar)
 \begin{align*}
 settling error &= \sum_1^k{S(i)*e^{(-(k-i)*T_{clk}+T_{dac})/\tau}}\\
 S(k)&=1/2*r^{(k-1)}\\
-settling error &= 1/2*r^{(k-1)}*e^{-T_{dac})/\tau}*\sum_0^{k-1}{r^-i*e^{-iT_{clk}/\tau}}\\
-settling error &= 1/2*r^{(k-1)}*e^{-T_{dac})/\tau}*(1-r^-k*e^{-k*T_{clk}/\tau})/(1-r^{-1}*e^{-T_{clk}/\tau})\\
-e^{-T_{clk}/\tau} &< r\\
-settling error &~= 1/2*r(k-1)*e^{(-T_{clk}/\tau)}/(1-r^{-1}**e^{-T_{clk}/\tau}) = m*1/2*r^{(k-1)}\\
-e^{-T_{dac}/\tau} = m/(1+rm) < r\\
+settling error &= 1/2*r^{(k-1)}*e^{-T_{dac})/\tau}*\sum_0^{k-1}{r^{-i}*e^{-iT_{clk}/\tau}}\\
+settling error &= 1/2*r^{(k-1)}*e^{-T_{dac})/\tau}*(1-r^{-k}*e^{-k*T_{clk}/\tau})/(1-r^{-1}*e^{-T_{clk}/\tau})\\
+e^{-T_{clk}/\tau} &< r for\:Conevergance\\
+settling error &~= 1/2*r^{(k-1)}*e^{(-T_{dac}/\tau)}/(1-r^{-1}*e^{-T_{clk}/\tau})\\
+settlingerror\:allowed\:by\:redundancy &= m*1/2*r^{(k-1)}\\
+T_{clk}&=T_{dac}\Leftarrow\:a\:pessimistic\:approximation\:\\
+e^{-T_{dac}/\tau} &= mr/(r+m)\\
 r&~=1/2\\
 T_{dac} &~= 2*ln(2)*\tau;
 \end{align*}
