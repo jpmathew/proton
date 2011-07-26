@@ -1,6 +1,7 @@
 \documentclass[a4paper,10pt,fleqn,titlepage,twoside]{article}
 \usepackage{amsmath}
 \usepackage{graphicx}
+\usepackage{epstopdf}
 \usepackage[colorlinks,linkcolor=red,urlcolor=red,citecolor=red,plainpages=false,pdfpagelabels,breaklinks]{hyperref}
 \pagestyle{plain}
 \graphicspath{./img/}
@@ -61,15 +62,17 @@ Another option is to add a pipelined clocked comparator to the first one but not
 $V_{in}*e^{(t1+t2)/\tau}$ making its resolution better . If decision of first and second latch are different it means previous decision was wrong and has to be corrected . It also means that next bit is immaterial and has tobe opposite to
 correct decision  . For example if input is 33 current dac level is 32 since input is very small coarse latch gave default value of 0 instead of correct value of 1 and fine latch gave 1 the crrect value . since conversion is allowed to proceed
 next threshold used will be 16 and output will be definitely 1 but instead of applying it we applying fine comparator output and its complement 3rd dac theshold 40 instead of 24 which is more precise and in correct range .
-\begin{figure}[p]
+\begin{figure}[hp]
 \centering
-\includegraphics[scale=0.5]{./img/code.png}
+\includegraphics[width=0.95\textwidth]{./img/code.png}
 \caption{Code convergance}
 \label{fig:pipeCmpCodeConveragnce}
 \end{figure}
-\begin{figure}[p]
+\begin{figure}[hp]
 \centering
-\includegraphics[scale=0.5]{./img/cmpArch.png}
+\setlength\fboxsep{5.0pt}
+\setlength\fboxrule{0.5pt}
+\fbox{\includegraphics[width=0.95\textwidth]{./img/cmpArch.pdf}}
 \caption{scheme}
 \label{fig:archReinforce}
 \end{figure}
@@ -109,16 +112,48 @@ T_{dac} &~= 2*ln(2)*\tau;
 \subsection*{Topology}
 From analysis of CDAC settling nature and from behavior of comparators if we use non binary SAR we get that 
 \begin{align*}
-VDD*e^{-T_{cmp}/\tau_1}&+S(k)*e^{-T_{dac}/\tau_2} &= S(k)*m\\
+VDD*e^{-T_{cmp}/\tau_1}&+S(k)*e^{-T_{dac}/\tau_2} = S(k)*m\\
 \Rightarrow &\;T_{decision}(k) = k*T1+T2\\
 \Rightarrow &\;T_{conversion} = N^2*T1+T2*N.
 \end{align*}
-The $O(N^{2})$ Term in this is what is Causing inefficiency in conversion and cannt be easily avoided without gain . 
-Adding gain also adds its $O(N^2)$ terms if given multiple steps . So following architecture is proposed .
+The $O(N^{2})$ Term in this is what is Causing inefficiency in conversion and cannt be easily avoided without gain . If We add Gain = $2^{k}$ in front
+of latch then along with non binary convergance we get latch time to be constant . But the gain component will add a delay which increases linearly 
+giving us no merit . This is because this delay element is traversed at each step . Suppose we gain up once and the use it for multiple resolution then
+we get a gain . But we still need to settle to required precision if a flash is used . But if a non binary SAR ADC us used and settling is allowed in 
+parallel to conversion we can get around this problem . one possible structure for that is as in fig.
 \begin{figure}[h]
 \centering
-\includegraphics[width=1.0\linewidth]{./img/topArch.png}
-\caption{scheme}
+\setlength\fboxsep{5.0pt}
+\setlength\fboxrule{0.5pt}
+\fbox{\includegraphics[width=0.95\textwidth]{./img/ampArch.pdf}}
+\caption{topology}
+\label{fig:ampArch}
+\end{figure}
+With finite gain in the amp the voltage at output will be $V_{top}*(1+\Delta))*K$ and hence input referred will be $V_{top}*\Delta$ . Now is P bits are resolved by succeding low precision ADC
+$1/(m*r^{k}$  which is quite small and its effect can also be calibrated away and settling should be pretty relaxed as it gets nearly P clocks to reach final value assuming kick back is small . 
+Increase in gain is proposed by cascade of stages leading to overall error of the order of $S*\Delta$  for S cascade stages.
+\begin{figure}[h]
+\centering
+\setlength\fboxsep{5.0pt}
+\setlength\fboxrule{0.5pt}
+\fbox{\includegraphics[width=0.95\textwidth]{./img/ampMulti.pdf}}
+\caption{multi Gain Stage configuration}
+\label{fig:ampMulti}
+\end{figure}
+Final Bits will be resolved by normal SAR operation with bits applied every clock on to main CDAC leading to following top level architecture and possible timing as in fig the grouping of bits and 
+gain has to be optimized further
+\begin{figure}[htbp]
+\centering
+\setlength\fboxsep{5.0pt}
+\setlength\fboxrule{0.5pt}
+\fbox{\includegraphics[width=0.95\textwidth]{./img/topArch.pdf}}
+\caption{top Level Topology}
 \label{fig:topArch}
+\end{figure}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=1.0\linewidth]{./img/timing.png}
+\caption{One possible conversion pattern}
+\label{fig:toptiming}
 \end{figure}
 \end{document}
