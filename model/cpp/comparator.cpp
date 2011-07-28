@@ -1,6 +1,64 @@
 #include "comparator.h"
+#include <cmath>
+#include <iostream>
+using namespace std;
 
-bool comparator::compare(double inp,double inm)
+comparator::comparator(double offset,double tau,bool async)
 {
-	return ( (inp-inm) > offset ? true : false) ;
+	this->offset=offset;
+	this->tau=tau;
+	this->async=async;
 }
+
+comparatorOut* comparator::compare(double inp,double inm,double timeout,double VDD)
+{
+	double readyTime;
+	bool decision;
+	bool timedout;
+	double time;
+	readyTime=tau*log(VDD/(inp-inm));
+	if(async==true)
+	{
+		if(readyTime>=timeout)
+		{
+			decision=false;
+			time=timeout;
+			timedout=true;
+		}
+		else
+		{
+			decision=((inp-inm)>offset)?true:false;
+			time=readyTime;
+			timedout=false;
+		}
+	}
+	else
+	{
+		decision=(inp-inm>offset)?true:false;
+		time=readyTime;
+		timedout=false;
+	}
+	return (new comparatorOut(decision,timedout,time));
+}
+
+comparatorOut::comparatorOut(bool decision,bool timedout,double time)
+{
+	this->decision=decision;
+	this->timedout=timedout;
+	this->time=time;
+}
+
+bool comparatorOut::getDecision()
+{	
+	return decision;
+}
+bool comparatorOut::isTimedOut()
+{
+	return timedout;
+}
+double comparatorOut::getTime()
+{
+	return time;
+}
+
+
