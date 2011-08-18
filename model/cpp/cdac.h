@@ -14,6 +14,7 @@ class cdac
 		double getTopPlate();
 		bool appplyBit(int bitPostion,bool bitState);
 		bool resetCDAC();
+		
 
 
 	
