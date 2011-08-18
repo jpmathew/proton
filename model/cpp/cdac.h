@@ -1,22 +1,25 @@
+#ifndef CDAC_H
+#define CDAC_H
+class step
+{
+	public :
+		double stepValue;
+		double stepTime;
+		step  *prev;
+		step(double stepValue,double stepTime);
+};
+
 class cdac
 {
 	private :
-		double topPlate;
-		int N;
-		bool *bottomPlate;
-		double *bitWeights
-		double VREF;
+		double topPlateVoltage;
+		double tau;
+		step *last;
 	public :
-		cdac(int N);
-		cdac(int N,double bitOneWeight,double nonBinaryRatio);
-		cdac(int N,double* bitWeights);
-
-		double getTopPlate();
-		bool appplyBit(int bitPostion,bool bitState);
-		bool resetCDAC();
-		
-
-
-	
+		cdac(double tau);
+		~cdac();
+		void applyStep(double stepValue,double stepTime);
+		double getTopPlateVoltage(double curTime);
+		void reset();
 };
-
+#endif

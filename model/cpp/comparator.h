@@ -3,15 +3,11 @@
 
 class comparatorOut
 {
-	private:
-	bool decision;
-	bool timedout;
-	double time;
 	public:
-	comparatorOut(bool decision,bool timedout,double time);
-	bool getDecision();
-	bool isTimedOut();
-	double getTime();
+	bool decision;
+	bool isTimedOut;
+	double time;
+	comparatorOut(bool decision,bool isTimedOut,double time);
 };
 
 

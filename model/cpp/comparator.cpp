@@ -41,24 +41,11 @@ comparatorOut* comparator::compare(double inp,double inm,double timeout,double V
 	return (new comparatorOut(decision,timedout,time));
 }
 
-comparatorOut::comparatorOut(bool decision,bool timedout,double time)
+comparatorOut::comparatorOut(bool decision,bool isTimedOut,double time)
 {
 	this->decision=decision;
-	this->timedout=timedout;
+	this->isTimedOut=isTimedOut;
 	this->time=time;
-}
-
-bool comparatorOut::getDecision()
-{	
-	return decision;
-}
-bool comparatorOut::isTimedOut()
-{
-	return timedout;
-}
-double comparatorOut::getTime()
-{
-	return time;
 }
 
 
