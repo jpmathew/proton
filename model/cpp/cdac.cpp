@@ -41,15 +41,19 @@ void cdac::applyStep(double stepValue,double stepTime)
 double cdac::getTopPlateVoltage(double curTime)
 {
 	double error=0.0;
+	double act=0.0;
 	step *stepIter;
 	stepIter=last;
 	while(stepIter->prev!=0)
 	{
-		error+=stepIter->stepValue*exp(-(curTime-stepIter->stepTime)/tau);
-		//cout<<stepIter->stepValue<<"\t"<<stepIter->stepTime<<endl;
+		if(curTime>stepIter->stepTime)
+		{
+			error+=stepIter->stepValue*exp(-(curTime-stepIter->stepTime)/tau);
+			act+=stepIter->stepValue;
+		}
 		stepIter=stepIter->prev;
 	}
-	return topPlateVoltage-error;
+	return act-error;
 }
 
 cdac::~cdac()

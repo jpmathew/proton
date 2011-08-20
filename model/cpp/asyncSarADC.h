@@ -7,7 +7,7 @@
 #include <iostream>
 #include <fstream>
 
-class simpleSarADC
+class asyncSarADC
 {
 	private:
 		cdac *mainCdac;
@@ -15,13 +15,15 @@ class simpleSarADC
 		int *bitOut;
 		int resolution;
 		int convTime;
-		const static int dacTime=500;
-		const static int cmpTime=100;
+		const static int ctDacTime=6000;
+		const static int ctCmpTime=6000;
+		const static double VREF=0.9;
 	public:
-		simpleSarADC(int resolution);
+		asyncSarADC(int resolution);
 		long convert(double input);
+		int getConvTime(); 
 		void dumpConvInfo();
-		~simpleSarADC();
+		~asyncSarADC();
 };
 
 #endif

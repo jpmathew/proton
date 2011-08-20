@@ -1,4 +1,4 @@
-#include "simpleSarADC.h"
+#include "asyncSarADC.h"
 #include "xnlCompute.h"
 #include <iostream>
 #include <fstream>
@@ -7,21 +7,28 @@ using namespace std;
 int main()
 {
 	ofstream dataOut("data.dat",ios::out);
-	simpleSarADC *adc = new simpleSarADC(5);
-	xnlCompute *linTest = new xnlCompute(5);
+	ofstream cnvTimeOut("cnvTime.dat",ios::out);
+	asyncSarADC *adc = new asyncSarADC(10);
+	xnlCompute *linTest = new xnlCompute(10);
 	double input;
 	long code;
-	/*	
-	for(input=0.0;input<1.0;input+=0.001)
+	int rampTest=11
+	if(rampTest==1)
 	{
-		code=adc->convert(input);
-		//cout<<code<<endl;
-		dataOut<<code<<endl;
+		for(input=0.0;input<0.0001;input+=0.00001)
+		{
+			code=adc->convert(input);
+			cout<<code<<"\t"<<input<<endl;
+			dataOut<<code<<endl;
+			cnvTimeOut<<adc->getConvTime()<<endl;	
+		}
 	}
-	*/
-	adc->convert(0.5);
-	adc->dumpConvInfo();
-
+	else
+	{
+		code=adc->convert(0.0+0.00001);
+		cout<<code<<endl;
+		adc->dumpConvInfo();
+	}
 	linTest->computeLin("data.dat");
 	return 1;
 }

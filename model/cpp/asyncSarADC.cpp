@@ -1,15 +1,15 @@
-#include "simpleSarADC.h"
+#include "asyncSarADC.h"
 using namespace std;
 
-simpleSarADC::simpleSarADC(int resolution)
+asyncSarADC::asyncSarADC(int resolution)
 {
 	this->resolution=resolution;
 	bitOut   = new int(resolution);
-	mainCmp  = new comparator(0.0,20.0,false);
+	mainCmp  = new comparator(0.0,20.0,true,0.9);
 	mainCdac = new cdac(80.0);
 }
 
-long simpleSarADC::convert(double input)
+long asyncSarADC::convert(double input)
 {
 	double curTime=0.0;
 	double bitWeight=1.0;
@@ -23,28 +23,27 @@ long simpleSarADC::convert(double input)
 	for(iter=1;iter<=resolution;iter++)
 	{
 		bitWeight/=2.0;
-		mainCdac->applyStep(sign*bitWeight,curTime);
-		curTime+=dacTime;
+		mainCdac->applyStep(sign*bitWeight*VREF,curTime);
+		curTime+=ctDacTime;
 
-		dout=mainCmp->compare(input,mainCdac->getTopPlateVoltage(curTime),100,0.9);
-		bitOut[iter]=dout->decision;
-		sign=2*bitOut[iter]-1;
-		curTime+=cmpTime;
-
+		dout=mainCmp->compare(input,mainCdac->getTopPlateVoltage(curTime),ctCmpTime);
+		bitOut[iter-1]=dout->decision;
+		curTime+=dout->time;
+		sign=2*bitOut[iter-1]-1;
 		delete dout;
 	}
 	
 	code=0;
 	for(iter=1;iter<=resolution;iter++)
 	{
-		code+=pow(2,resolution-iter)*bitOut[iter];
+		code+=pow(2,resolution-iter)*bitOut[iter-1];
 	}
 
 	convTime=curTime;
 	return code;
 }
 
-void simpleSarADC::dumpConvInfo()
+void asyncSarADC::dumpConvInfo()
 {
 	int infoSmplTime=20;
 	int curTime=0;
@@ -68,7 +67,12 @@ void simpleSarADC::dumpConvInfo()
 	bitFile.close();
 }
 
-simpleSarADC::~simpleSarADC()
+int asyncSarADC::getConvTime()
+{
+	return convTime;
+}
+
+asyncSarADC::~asyncSarADC()
 {
 	delete [] bitOut;
 }

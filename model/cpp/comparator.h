@@ -16,12 +16,13 @@ class comparator
 	private:
 	double offset;
 	double tau;
+	double VDD;
 	bool async;
 	double timeout;
 	double time;
 	public:
-	comparator(double offset,double tau,bool async);
-	comparatorOut* compare(double inp,double inm,double timeout,double VDD);
+	comparator(double offset,double tau,bool async,double VDD);
+	comparatorOut* compare(double inp,double inm,double timeout);
 };
 
 
