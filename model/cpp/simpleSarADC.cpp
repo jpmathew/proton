@@ -1,23 +1,11 @@
 #include "simpleSarADC.h"
-#include <iostream>
 using namespace std;
-
-
-long pow(int base,int exp)
-{
-	int iter;
-	long result=1;
-	for(iter=1;iter<=exp;iter++)
-	{
-		result*=base;
-	}
-	return result;
-}
 
 simpleSarADC::simpleSarADC(int resolution)
 {
 	this->resolution=resolution;
 	bitOut   = new int(resolution);
+	dacVals  = new double(resolution*5);
 	mainCmp  = new comparator(0.0,20.0,false);
 	mainCdac = new cdac(80.0);
 }
@@ -27,7 +15,7 @@ long simpleSarADC::convert(double input)
 	double curTime=0.0;
 	double bitWeight=1.0;
 	comparatorOut *dout;
-	int iter,sign;
+	int iter,sign,diter;
 	long code;
 
 	sign=1;
@@ -37,7 +25,13 @@ long simpleSarADC::convert(double input)
 	{
 		bitWeight/=2.0;
 		mainCdac->applyStep(sign*bitWeight,curTime);
-		curTime+=480;
+
+		for(diter=0;diter<5;di
+		dacVals[iter]=mainCdac->getTopPlateVoltage(curTime);
+
+
+
+		curTime+=280;
 		//cout<<mainCdac->getTopPlateVoltage(curTime)<<endl;
 		dout=mainCmp->compare(input,mainCdac->getTopPlateVoltage(curTime),100,0.9);
 		bitOut[iter]=dout->decision;
@@ -56,3 +50,24 @@ long simpleSarADC::convert(double input)
 	return code;
 }
 
+void simpleSarADC::dumpConvInfo()
+{
+	ofstream dacFile("dac.dat",ios::out);
+	ofstream bitFile("bit.dat",ios::out);
+	int iter;
+
+	for(iter=0;iter<resolution;iter++)
+	{
+		dacFile<<dacVals[iter]<<endl;
+		bitFile<<bitOut[iter]<<endl;
+	}
+
+	dacFile.close();
+	bitFile.close();
+}
+
+simpleSarADC::~simpleSarADC()
+{
+	delete [] bitOut;
+	delete [] dacVals;
+}

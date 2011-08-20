@@ -1,12 +1,100 @@
 #include "xnlCompute.h"
 
-void xnlCompute::computeLin(char *fileName,int resolution)
+xnlCompute::xnlCompute(int resolution)
 {
-	long code,minCode,maxCode;
-	double totalHit,avgHit.
-	double  
+	numCode=pow(2,resolution);
+	codeHits=new int [numCode];
+}
+
+xnlCompute::~xnlCompute()
+{
+	delete [] codeHits;
+}
+
+void xnlCompute::computeLin(const char *fileName)
+{
 	codeData.open(fileName,ios::in);
 	dnlData.open("dnl.dat",ios::out);
 	inlData.open("inl.dat",ios::out);
+
+	for(code=0;code<numCode;code++)
+	{
+		codeHits[code]=0;
+	}
+	totalHit=0;
+	
+
+	while(!codeData.eof())
+	{
+		codeData>>code;
+		codeHits[code]++;
+		totalHit++;
+	}
+	codeData.close();
+
+
+	//get codeHits
+	minCode=0;
+	maxCode=numCode-1;
+	for(code=0;code<numCode;code++)
+	{
+		if(codeHits[code]!=0)
+		{
+			break;
+		}
+		else
+		{
+			minCode=code;
+		}
+	}
+
+	for(code=numCode-1;code>0;code--)
+	{
+		if(codeHits[code]!=0)
+		{
+			break;
+		}
+		else
+		{
+			maxCode=code;
+		}
+	}
+
+	//linearity computation Begins
+	avgHit=totalHit/double(maxCode-minCode+1);
+	for(code=0;code<minCode;code++)
+	{
+		dnlData<<0.0<<endl;
+		inlData<<0.0<<endl;
+	}
+
+	inl=0.0;
+	dnl=0.0;
+	for(code=minCode;code<=maxCode;code++)
+	{
+		//cout<<codeHits[code]<<endl;
+		dnl=double(codeHits[code]-avgHit)/avgHit;
+		inl+=dnl;
+		dnlData<<dnl<<endl;
+		inlData<<inl<<endl;
+	}
+
+	for(code=maxCode+1;code<numCode;code++)
+	{
+		dnlData<<0.0<<endl;
+		inlData<<0.0<<endl;
+	}
+	//lineraity computation ends
+
+	dnlData.close();
+	inlData.close();
+
+}
+
+
+
+
+	
+
 
 
