@@ -4,8 +4,8 @@ using namespace std;
 asyncSarADC::asyncSarADC(int resolution)
 {
 	this->resolution=resolution;
-	bitOut   = new int(resolution);
-	mainCmp  = new comparator(0.0,20.0,true,0.9);
+	bitOut   = new int [resolution];
+	mainCmp  = new comparator(0.0,20.0,true);
 	mainCdac = new cdac(80.0);
 }
 
@@ -13,24 +13,21 @@ long asyncSarADC::convert(double input)
 {
 	double curTime=0.0;
 	double bitWeight=1.0;
-	comparatorOut *dout;
 	int iter,sign,diter;
 	long code;
 
 	sign=1;
 	mainCdac->reset();
-
 	for(iter=1;iter<=resolution;iter++)
 	{
 		bitWeight/=2.0;
 		mainCdac->applyStep(sign*bitWeight*VREF,curTime);
 		curTime+=ctDacTime;
 
-		dout=mainCmp->compare(input,mainCdac->getTopPlateVoltage(curTime),ctCmpTime);
-		bitOut[iter-1]=dout->decision;
-		curTime+=dout->time;
+		bitOut[iter-1]=	mainCmp->compare(input,mainCdac->getTopPlateVoltage(curTime),ctCmpTime);
+		curTime+=mainCmp->cmpTime();
+		//cout<<mainCmp->cmpTime();
 		sign=2*bitOut[iter-1]-1;
-		delete dout;
 	}
 	
 	code=0;
@@ -75,4 +72,6 @@ int asyncSarADC::getConvTime()
 asyncSarADC::~asyncSarADC()
 {
 	delete [] bitOut;
+	delete mainCdac;
+	delete mainCmp;
 }

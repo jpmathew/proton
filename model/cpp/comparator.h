@@ -1,28 +1,24 @@
 #ifndef COMPARATOR_H
 #define COMPARATOR_H
 
-class comparatorOut
-{
-	public:
-	bool decision;
-	bool isTimedOut;
-	double time;
-	comparatorOut(bool decision,bool isTimedOut,double time);
-};
-
-
 class comparator
 {
 	private:
 	double offset;
 	double tau;
-	double VDD;
 	bool async;
-	double timeout;
+	const static double VDD=0.9;
+
+	bool decision;
+	bool timedOut;
 	double time;
+
 	public:
-	comparator(double offset,double tau,bool async,double VDD);
-	comparatorOut* compare(double inp,double inm,double timeout);
+	comparator(double offset,double tau,bool async);
+	~comparator();
+	bool compare(double inp,double inm,double timeout);
+	bool isTimedOut();
+	double cmpTime();
 };
 
 

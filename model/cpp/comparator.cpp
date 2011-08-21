@@ -3,25 +3,22 @@
 #include <iostream>
 using namespace std;
 
-comparator::comparator(double offset,double tau,bool async,double VDD)
+comparator::comparator(double offset,double tau,bool async)
 {
 	this->offset=offset;
 	this->tau=tau;
 	this->async=async;
-	this->VDD=VDD;
 }
 
-comparatorOut* comparator::compare(double inp,double inm,double timeout)
+bool comparator::compare(double inp,double inm,double timeout)
 {
 	double readyTime;
-	bool decision;
-	bool timedout;
-	double time;
-	
+
 	if(abs(inp-inm-offset)<1e-6)
 	{
 		inp=inm+offset+1e-6;
 	}
+	
 	readyTime=tau*log(VDD/(abs(inp-inm-offset)));
 
 	if(async==true)
@@ -30,59 +27,39 @@ comparatorOut* comparator::compare(double inp,double inm,double timeout)
 		{
 			decision=false;
 			time=timeout;
-			timedout=true;
+			timedOut=true;
 		}
 		else
 		{
 			decision=((inp-inm)>offset)?true:false;
 			time=readyTime;
-			timedout=false;
+			timedOut=false;
 		}
 	}
 	else
 	{
 		decision=((inp-inm-offset*exp(timeout/tau))>VDD)?true:false;
 		time=timeout;
-		timedout=false;
+		timedOut=false;
 	}
-//	if((inp-inm-offset)>1e-8)
-//	{
-//		readyTime=tau*log(VDD/(inp-inm-offset));
-//	}
-//	else
-//	{
-//		readyTime=1000000;
-//	}
-//	cout<<readyTime<<endl;
-//	if(async==true)
-//	{
-//		if(readyTime>=timeout)
-//		{
-//			decision=false;
-//			time=timeout;
-//			timedout=true;
-//		}
-//		else
-//		{
-//			decision=((inp-inm)>offset)?true:false;
-//			time=readyTime;
-//			timedout=false;
-//		}
-//	}
-//	else
-//	{
-//		decision=(inp-inm>offset)?true:false;
-//		time=readyTime;
-//		timedout=false;
-//	}
-	return (new comparatorOut(decision,timedout,time));
+	
+	return decision;
 }
 
-comparatorOut::comparatorOut(bool decision,bool isTimedOut,double time)
+
+bool comparator::isTimedOut()
 {
-	this->decision=decision;
-	this->isTimedOut=isTimedOut;
-	this->time=time;
+	return timedOut;
 }
+
+double comparator::cmpTime()
+{
+	return time;
+}
+
+comparator::~comparator()
+{
+}
+
 
 

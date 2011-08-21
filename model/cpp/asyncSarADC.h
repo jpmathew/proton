@@ -15,8 +15,8 @@ class asyncSarADC
 		int *bitOut;
 		int resolution;
 		int convTime;
-		const static int ctDacTime=6000;
-		const static int ctCmpTime=6000;
+		const static int ctDacTime=600;
+		const static int ctCmpTime=140;
 		const static double VREF=0.9;
 	public:
 		asyncSarADC(int resolution);

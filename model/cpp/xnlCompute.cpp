@@ -59,10 +59,16 @@ void xnlCompute::computeLin(const char *fileName)
 			maxCode=code;
 		}
 	}
+	
+	cout<<minCode<<"\t"<<maxCode<<endl;
 
+	for(code=minCode+5;code<=maxCode-5;code++)
+	{
+		totalHit+=codeHits[code];
+	}
 	//linearity computation Begins
-	avgHit=totalHit/double(maxCode-minCode+1);
-	for(code=0;code<minCode;code++)
+	avgHit=totalHit/double(maxCode-minCode-9);
+	for(code=0;code<minCode+5;code++)
 	{
 		dnlData<<0.0<<endl;
 		inlData<<0.0<<endl;
@@ -70,7 +76,7 @@ void xnlCompute::computeLin(const char *fileName)
 
 	inl=0.0;
 	dnl=0.0;
-	for(code=minCode;code<=maxCode;code++)
+	for(code=minCode+5;code<=maxCode-5;code++)
 	{
 		//cout<<codeHits[code]<<endl;
 		dnl=double(codeHits[code]-avgHit)/avgHit;
@@ -79,7 +85,7 @@ void xnlCompute::computeLin(const char *fileName)
 		inlData<<inl<<endl;
 	}
 
-	for(code=maxCode+1;code<numCode;code++)
+	for(code=maxCode-4;code<numCode;code++)
 	{
 		dnlData<<0.0<<endl;
 		inlData<<0.0<<endl;
