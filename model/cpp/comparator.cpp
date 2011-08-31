@@ -14,9 +14,9 @@ bool comparator::compare(double inp,double inm,double timeout)
 {
 	double readyTime;
 
-	if(abs(inp-inm-offset)<1e-6)
+	if(abs(inp-inm-offset)<1e-8)
 	{
-		inp=inm+offset+1e-6;
+		inp=inm+offset-1e-8;
 	}
 	
 	readyTime=tau*log(VDD/(abs(inp-inm-offset)));
@@ -38,7 +38,7 @@ bool comparator::compare(double inp,double inm,double timeout)
 	}
 	else
 	{
-		decision=((inp-inm-offset*exp(timeout/tau))>VDD)?true:false;
+		decision=(((inp-inm-offset)*exp(timeout/tau))>VDD)?true:false;
 		time=timeout;
 		timedOut=false;
 	}

@@ -21,14 +21,10 @@ void xnlCompute::computeLin(const char *fileName)
 	{
 		codeHits[code]=0;
 	}
-	totalHit=0;
-	
-
 	while(!codeData.eof())
 	{
 		codeData>>code;
 		codeHits[code]++;
-		totalHit++;
 	}
 	codeData.close();
 
@@ -61,13 +57,18 @@ void xnlCompute::computeLin(const char *fileName)
 	}
 	
 	cout<<minCode<<"\t"<<maxCode<<endl;
-
+	totalHit=0.0;
 	for(code=minCode+5;code<=maxCode-5;code++)
 	{
 		totalHit+=codeHits[code];
+		if(code >= 505 && code <= 516)
+		{
+			cout<<codeHits[code]<<endl;
+		}
 	}
 	//linearity computation Begins
 	avgHit=totalHit/double(maxCode-minCode-9);
+	cout<<avgHit<<endl;
 	for(code=0;code<minCode+5;code++)
 	{
 		dnlData<<0.0<<endl;
