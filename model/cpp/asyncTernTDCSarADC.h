@@ -1,5 +1,5 @@
-#ifndef ASYNCTDCSARADC_H
-#define ASYNCTDCSARADC_H
+#ifndef ASYNC_TERN_TDC_SAR_ADC_H
+#define ASYNC_TERN_TDC_SAR_ADC_H
 
 #include "cdac.h"
 #include "comparator.h"
@@ -9,7 +9,7 @@
 #include <iostream>
 #include <fstream>
 
-class asyncTDCSarADC
+class asyncTernTDCSarADC
 {
 	private:
 		cdac *mainCdac;
@@ -19,16 +19,16 @@ class asyncTDCSarADC
 		int convTime;
 		const static int ctCmpTau=10;
 		const static int ctDacTau=40;
-		const static int ctDacTime=80;
+		const static int ctDacTime=50;
 		const static int ctOverHeadTime=20;
 		const static int ctCmpTime=140;
 		const static double VREF=0.9;
 	public:
-		asyncTDCSarADC(int resolution);
+		asyncTernTDCSarADC(int resolution);
 		long convert(double input);
 		int getConvTime(); 
 		void dumpConvInfo();
-		~asyncTDCSarADC();
+		~asyncTernTDCSarADC();
 };
 
 #endif

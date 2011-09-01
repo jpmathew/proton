@@ -1,3 +1,4 @@
+#include "asyncTernTDCSarADC.h"
 #include "asyncTDCSarADC.h"
 #include "xnlCompute.h"
 #include <iostream>
@@ -8,7 +9,8 @@ int main()
 {
 	ofstream dataOut("data.dat",ios::out);
 	ofstream cnvTimeOut("cnvTime.dat",ios::out);
-	asyncTDCSarADC *adc = new asyncTDCSarADC(10);
+	asyncTernTDCSarADC *adc = new asyncTernTDCSarADC(10);
+	//asyncTDCSarADC *adc = new asyncTDCSarADC(10);
 	xnlCompute *linTest = new xnlCompute(10);
 	double input;
 	long code;
@@ -24,7 +26,7 @@ int main()
 	}
 	else
 	{
-		code=adc->convert(0.45);
+		code=adc->convert(0.85);
 		cout<<code<<endl;
 	}
 	linTest->computeLin("data.dat");

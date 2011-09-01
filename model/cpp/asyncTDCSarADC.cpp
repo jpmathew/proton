@@ -37,6 +37,7 @@ long asyncTDCSarADC::convert(double input)
 		add[iter-1]=(1-isTimedOut)*bitOut[iter-1];
 		sub[iter-1]=(1-isTimedOut)*(1-bitOut[iter-1]);
 		sign=add[iter-1]-sub[iter-1];
+		curTime+=ctOverHeadTime;
 		//cout<<iter<<"\t"<<sign<<"\t"<<timeOut<<"\t"<<mainCmp->cmpTime()<<"\t"<<isTimedOut<<endl;
 	}
 	
