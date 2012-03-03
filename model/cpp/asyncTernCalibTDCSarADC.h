@@ -3,17 +3,23 @@
 
 #include "cdac.h"
 #include "comparator.h"
+#include "delayLine.h"
+#include "binDelayLine.h"
 #include "simpleFunctions.h"
 #include <cstdlib>
 #include <cmath>
 #include <iostream>
 #include <fstream>
 
-class asyncTernTDCSarADC
+class asyncTernCalibTDCSarADC
 {
 	private:
 		cdac *mainCdac;
 		comparator *mainCmp;
+		delayLine *mainDelayLine;
+		binDelayLine *calibDelayLineP,*calibDelayLineM;
+		binDelayLine *auxDelayLine;
+		
 		int *bitOut,*add,*sub;
 		int resolution;
 		int convTime;
