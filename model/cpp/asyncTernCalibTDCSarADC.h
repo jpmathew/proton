@@ -5,6 +5,7 @@
 #include "comparator.h"
 #include "delayLine.h"
 #include "binDelayLine.h"
+#include "calibBlock.h"
 #include "simpleFunctions.h"
 #include <cstdlib>
 #include <cmath>
@@ -17,16 +18,17 @@ class asyncTernCalibTDCSarADC
 		cdac *mainCdac;
 		comparator *mainCmp;
 		delayLine *mainDelayLine;
-		binDelayLine *calibDelayLineP,*calibDelayLineM;
-		binDelayLine *auxDelayLine;
+		binDelayLine *fineDelayLine;
+		calibBlock *calibRom; 
 		
 		int *bitOut,*add,*sub;
+
 		int resolution;
 		int convTime;
 		const static int ctCmpTau=10;
 		const static int ctDacTau=40;
-		const static int ctDacTime=50;
-		const static int ctOverHeadTime=20;
+		const static int ctDacTime=40;
+		const static int ctOverHeadTime=40;
 		const static int ctCmpTime=140;
 		const static double VREF=0.9;
 	public:

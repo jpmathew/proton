@@ -10,3 +10,8 @@ long pow(int base,int exp)
 	}
 	return result;
 }
+
+int maxInt(int x,int y)
+{
+	return x>y?x:y;
+}

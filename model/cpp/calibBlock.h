@@ -9,7 +9,7 @@ class calibBlock
 		calibBlock()
 		{
 			main=0;
-			for(int count=0;count<7;count++)
+			for(int count=0;count<6;count++)
 			{
 				fine[count]=0;
 			}
